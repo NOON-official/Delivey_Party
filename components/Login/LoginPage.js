@@ -5,14 +5,13 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import {WithLocalSvg} from 'react-native-svg';
 import Logo from '../../assets/smile(red).svg';
 
-
 const onGoogleButtonPress = async () => {
   const {idToken} = await GoogleSignin.signIn();
   const googleCredential = auth.GoogleAuthProvider.credential(idToken);
   console.log(auth().signInWithCredential(googleCredential));
 };
 
-export default function LoginPage() {
+export default function LoginPage({navigation}) {
   const [dongOpen, setDongOpen] = useState(false);
   const [floorOpen, setfloorOpen] = useState(false);
   const [dong, setDong] = useState(null);
@@ -103,7 +102,9 @@ export default function LoginPage() {
       <View style={{padding: 60, marginTop: 100}}>
         <Button
           title="본인인증 및 로그인"
-          onPress={() => console.log(nickName, dong, floor)}></Button>
+          onPress={() => {
+            console.log(nickName, dong, floor); //추후 서버연결 작업 필요
+          }}></Button>
       </View>
     </View>
   );
