@@ -101,9 +101,9 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {isLoggedIn ? (
-          <Stack.Screen name="Login" component={LoginPage} />
-        ) : (
           <Stack.Screen name="Tab" component={TabNaviagator} />
+        ) : (
+          <Stack.Screen name="Login" component={LoginPage} />
         )}
       </Stack.Navigator>
     </NavigationContainer>
