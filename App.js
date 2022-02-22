@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Text, View, Button} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -8,6 +8,16 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import LoginPage from './components/Login/LoginPage';
 import MainPage from './components/MainPage';
 import UploadPage from './components/UploadPage';
+
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+
+const googleSigninConfigure = () => {
+  GoogleSignin.configure({
+    webClientId:
+      '868757817271-rp1a7gpptj9jotqnd2duhhmsov3kl831.apps.googleusercontent.com',
+  });
+};
 
 function HomeScreen() {
   return (
@@ -20,7 +30,7 @@ function HomeScreen() {
 function SettingsScreen() {
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Settings!</Text>
+      <Button title="log out" onPress={() => auth().signOut()}></Button>
     </View>
   );
 }
@@ -66,14 +76,34 @@ function TabNaviagator() {
 
 const Stack = createStackNavigator();
 export default function App() {
-  const isLoggedIn = true; // 추후 서버와 연결해서 로그인 정보 불러오기 필요
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [displayName, setDisplayName] = useState('Please');
+  const checkLoggedIn = () => {
+    auth().onAuthStateChanged(user => {
+      if (user) {
+        setLoggedIn(true);
+        user.updateProfile({
+          displayName: `${displayName}`,
+        });
+        console.log('loggedIn');
+        console.log(user);
+      } else {
+        setLoggedIn(false);
+        console.log('loggedOut');
+      }
+    });
+  };
+  useEffect(() => {
+    googleSigninConfigure();
+    checkLoggedIn();
+  });
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {isLoggedIn ? (
-          <Stack.Screen name="Tab" component={TabNaviagator} />
-        ) : (
           <Stack.Screen name="Login" component={LoginPage} />
+        ) : (
+          <Stack.Screen name="Tab" component={TabNaviagator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>
