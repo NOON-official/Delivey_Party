@@ -1,21 +1,32 @@
 import randomNameGenerator from 'korean-random-names-generator';
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {Text, View, Button, StatusBar} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {WithLocalSvg} from 'react-native-svg';
 import Logo from '../../assets/smile(red).svg';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+} from '@react-native-google-signin/google-signin';
+import auth, {
+  firebase,
+  getAuth,
+  updateProfile,
+} from '@react-native-firebase/auth';
 
 const onGoogleButtonPress = async () => {
   const {idToken} = await GoogleSignin.signIn();
   const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-  console.log(auth().signInWithCredential(googleCredential));
+  return auth().signInWithCredential(googleCredential);
 };
 
 export default function LoginPage({navigation}) {
+  const user = firebase.auth().currentUser;
   const [dongOpen, setDongOpen] = useState(false);
-  const [floorOpen, setfloorOpen] = useState(false);
+  const [floorOpen, setFloorOpen] = useState(false);
   const [dong, setDong] = useState(null);
   const [floor, setFloor] = useState(null);
+  const [nickName, setNickName] = useState(randomNameGenerator());
   const [itemsDong, setItemsDong] = useState([
     {label: 'A동', value: 'A'},
     {label: 'B동', value: 'B'},
@@ -23,7 +34,6 @@ export default function LoginPage({navigation}) {
     {label: 'D동', value: 'D'},
     {label: 'E동', value: 'E'},
   ]);
-
   const [itemsFloor, setItemsFloor] = useState([
     {label: '1층', value: '1'},
     {label: '2층', value: '2'},
@@ -37,18 +47,25 @@ export default function LoginPage({navigation}) {
     {label: '10층', value: '10'},
     {label: '11층', value: '11'},
   ]);
-
   const onDongOpen = useCallback(() => {
     setFloorOpen(false);
   }, []);
-
   const onFloorOpen = useCallback(() => {
     setDongOpen(false);
   }, []);
 
-  const [nickName, setNickName] = useState(randomNameGenerator());
   const changeRandomNickName = () => {
     setNickName(randomNameGenerator());
+  };
+
+  const changeDisplayName = () => {
+    if (user) {
+      user.updateProfile({
+        displayName: `${dong}동 ${floor}층 ${nickName}`,
+      });
+    } else {
+      console.log('update fail');
+    }
   };
 
   return (
@@ -92,19 +109,20 @@ export default function LoginPage({navigation}) {
             onOpen={onFloorOpen}
             items={itemsFloor}
             value={floor}
-            setOpen={setfloorOpen}
+            setOpen={setFloorOpen}
             setValue={setFloor}
             setItems={setItemsFloor}
             placeholder="층을 선택해주세요."
           />
         </View>
       </View>
-      <View style={{padding: 60, marginTop: 100}}>
-        <Button
-          title="본인인증 및 로그인"
+      <View style={{alignItems: 'center', marginTop: 110}}>
+        <GoogleSigninButton
           onPress={() => {
-            console.log(nickName, dong, floor); //추후 서버연결 작업 필요
-          }}></Button>
+            onGoogleButtonPress();
+            changeDisplayName(); //추후 수정 필요. 현재는 유저 이름을 못 바꾸는 중
+          }}
+        />
       </View>
     </View>
   );
