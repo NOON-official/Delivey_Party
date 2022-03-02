@@ -81,7 +81,7 @@ export default function App() {
   const checkLoggedIn = () => {
     auth().onAuthStateChanged(user => {
       if (user) {
-        setLoggedIn(true);
+        setLoggedIn(false);
         user.updateProfile({
           displayName: `${displayName}`,
         });

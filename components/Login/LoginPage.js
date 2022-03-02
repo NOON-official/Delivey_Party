@@ -3,6 +3,9 @@ import React, {useState, useCallback, useEffect} from 'react';
 import {Text, View, Button, StatusBar} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import {WithLocalSvg} from 'react-native-svg';
+import {Styles} from '../../styles/LoginStyle';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Logo from '../../assets/smile(red).svg';
 import {
   GoogleSignin,
@@ -69,32 +72,32 @@ export default function LoginPage({navigation}) {
   };
 
   return (
-    <View>
+       <View style={{flex:1}}>
       <StatusBar style="auto" />
-      <View style={{alignItems: 'center', marginTop: 20}}>
+      <View style={{ flex:1, alignItems: 'center', marginTop: 80}}>
         <WithLocalSvg asset={Logo} />
       </View>
 
-      <View style={{alignItems: 'center'}}>
-        <View style={{marginTop: 80, flexDirection: 'row'}}>
-          <View>
-            <Text>{nickName}</Text>
+      <View style={{flex: 4,alignItems:'center', justifyContent:'space-between'}}>
+        
+        <View style={Styles.nicknamebox}>
+          <View style={{justifyContent:'center', paddingLeft:10}}>
+            <Text style={{color:'black'}}>{nickName}</Text>
           </View>
-          <View style={{paddingLeft: 20}}>
-            <Button
-              title="이름 새로고침"
-              onPress={() => changeRandomNickName()}
-            />
+          <View style={{marginTop:15, marginRight:10}}>
+          <TouchableOpacity  onPress={() => changeRandomNickName()}>
+          <Ionicons  name={'reload'} size={20} color={'#FF480E'} />
+          </TouchableOpacity>
           </View>
+
+
         </View>
+
         <View
-          style={{
-            marginTop: 20,
-            margin: 100,
-            zIndex: 2000,
-            flexDirection: 'row',
-          }}>
-          <DropDownPicker
+          style={Styles.dropdownview}
+          >
+           
+              <DropDownPicker
             open={dongOpen}
             onOpen={onDongOpen}
             items={itemsDong}
@@ -102,8 +105,10 @@ export default function LoginPage({navigation}) {
             setOpen={setDongOpen}
             setValue={setDong}
             setItems={setItemsDong}
-            placeholder="동을 선택해 주세요"
+            placeholder="동"
+            containerStyle={Styles.dropdownstyle}
           />
+         
           <DropDownPicker
             open={floorOpen}
             onOpen={onFloorOpen}
@@ -112,18 +117,22 @@ export default function LoginPage({navigation}) {
             setOpen={setFloorOpen}
             setValue={setFloor}
             setItems={setItemsFloor}
-            placeholder="층을 선택해주세요."
+            placeholder="층"
+            containerStyle={Styles.dropdownstyle}
+          
           />
         </View>
-      </View>
-      <View style={{alignItems: 'center', marginTop: 110}}>
+        <View style={{flex:3, padding: 60, marginBottom:100}}>
         <GoogleSigninButton
+        style={Styles.signin}
           onPress={() => {
             onGoogleButtonPress();
             changeDisplayName(); //추후 수정 필요. 현재는 유저 이름을 못 바꾸는 중
           }}
         />
       </View>
+      </View>
+      
     </View>
   );
 }
